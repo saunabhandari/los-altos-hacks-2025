@@ -4,17 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CheckYoSelf - Mental Health Check-In</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #dfe9f3, #ffffff);
+      overflow: hidden;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      background: var(--dynamic-gradient);
+      transition: background 0.5s ease;
     }
+  
+    .floating-emoji {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.25;
+      animation: floaty 10s infinite ease-in-out;
+      user-select: none;
+      pointer-events: none;
+    }
+  
+    .emoji1 { top: 10%; left: 15%; animation-delay: 0s; }
+    .emoji2 { top: 70%; left: 75%; animation-delay: 2s; }
+    .emoji3 { top: 40%; left: 50%; animation-delay: 4s; }
+    .emoji4 { top: 85%; left: 25%; animation-delay: 6s; }
+    .emoji5 { top: 20%; left: 80%; animation-delay: 1s; }
+.emoji6 { top: 65%; left: 10%; animation-delay: 3.2s; }
+.emoji7 { top: 55%; left: 40%; animation-delay: 5.5s; }
+.emoji8 { top: 30%; left: 60%; animation-delay: 2.7s; }
+.emoji9 { top: 75%; left: 35%; animation-delay: 4.3s; }
+.emoji10 { top: 5%; left: 45%; animation-delay: 0.8s; }
+.emoji11 { top: 50%; left: 90%; animation-delay: 6.6s; }
+.emoji12 { top: 15%; left: 5%; animation-delay: 7.4s; }
+.emoji13 { top: 80%; left: 20%; animation-delay: 8.1s; }
+  
+    @keyframes floaty {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-25px) rotate(180deg); }
+      100% { transform: translateY(0px) rotate(360deg); }
+    }
+  
+    /* Container & Form Styling (leave as is) */
     .container {
       background: white;
       padding: 2rem;
@@ -22,23 +54,29 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       max-width: 400px;
       width: 100%;
+      z-index: 1;
+      position: relative;
     }
+  
     h1 {
       text-align: center;
       font-size: 2rem;
       margin-bottom: 0.5rem;
     }
+  
     .subheading {
       text-align: center;
       font-size: 0.9rem;
       color: #777;
       margin-bottom: 1.5rem;
     }
+  
     form label {
       display: block;
       margin-top: 1rem;
       font-weight: bold;
     }
+  
     input, select, textarea, button {
       width: 100%;
       padding: 0.5rem;
@@ -46,9 +84,11 @@
       border: 1px solid #ccc;
       margin-top: 0.3rem;
     }
+  
     textarea {
       resize: none;
     }
+  
     button {
       margin-top: 1.5rem;
       background-color: #6c63ff;
@@ -58,9 +98,11 @@
       font-weight: bold;
       transition: background 0.3s ease;
     }
+  
     button:hover {
       background-color: #574fd8;
     }
+  
     #result {
       margin-top: 2rem;
       background: #f0f4ff;
@@ -69,12 +111,29 @@
       text-align: center;
       box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
     }
+  
     .hidden {
       display: none;
     }
   </style>
+  
 </head>
 <body>
+
+  <div class="floating-emoji emoji1">🌟</div>
+  <div class="floating-emoji emoji2">☁️</div>
+  <div class="floating-emoji emoji3">💖</div>
+  <div class="floating-emoji emoji4">✨</div>
+  <div class="floating-emoji emoji5">🌸</div>
+  <div class="floating-emoji emoji6">🧸</div>
+  <div class="floating-emoji emoji7">💫</div>
+  <div class="floating-emoji emoji8">🎈</div>
+  <div class="floating-emoji emoji9">🫶</div>
+  <div class="floating-emoji emoji10">💤</div>
+  <div class="floating-emoji emoji11">🌈</div>
+  <div class="floating-emoji emoji12">🌻</div>
+  <div class="floating-emoji emoji13">🍀</div>
+
   <div class="container">
     <h1>✨ CheckYoSelf</h1>
     <p class="subheading">Your daily mental health check-in</p>
@@ -100,41 +159,107 @@
 
       <button type="submit">Get My Tip ✨</button>
     </form>
-
-    <div id="result" class="hidden">
-      <h2>Your Tip:</h2>
-      <p id="tip-text"></p>
-    </div>
   </div>
 
+  <div id="activity-container" class="hidden"></div>
+
   <script>
-    const form = document.getElementById("checkin-form");
-    const energySlider = document.getElementById("energy");
-    const energyValue = document.getElementById("energy-value");
-    const resultDiv = document.getElementById("result");
-    const tipText = document.getElementById("tip-text");
+    const moodSelect = document.getElementById("mood");
+    const activityContainer = document.getElementById("activity-container");
 
-    const tips = {
-      happy: ["Keep spreading those good vibes!", "Gratitude journaling keeps happiness flowing ✨"],
-      anxious: ["Try the 4-7-8 breathing technique.", "Take a walk or stretch — it really helps."],
-      meh: ["Try something small and creative today.", "Drink water, move a little, rest a little ☕"],
-      sad: ["Be gentle with yourself today. It's okay to feel low.", "Reach out to someone you trust ❤"],
-      angry: ["Take a break and breathe deeply.", "Try journaling what you're feeling. It's valid."]
-    };
-
-    energySlider.addEventListener("input", () => {
-      energyValue.textContent = energySlider.value;
-    });
-
-    form.addEventListener("submit", (e) => {
+    document.querySelector("form").addEventListener("submit", function (e) {
       e.preventDefault();
-      const mood = document.getElementById("mood").value;
-      const tipList = tips[mood] || ["You're doing your best. That's enough for today ❤"];
-      const tip = tipList[Math.floor(Math.random() * tipList.length)];
+      const mood = moodSelect.value;
+      activityContainer.classList.remove("hidden");
+      activityContainer.innerHTML = ""; // Clear previous content
 
-      tipText.textContent = tip;
-      resultDiv.classList.remove("hidden");
+      if (mood === "happy") {
+        activityContainer.innerHTML = `
+          <h2>Celebrate Your Joy 🎉</h2>
+          <p style="text-align:center;">Press play to vibe out to a happy tune 🎶</p>
+          <audio controls autoplay style="display:block; margin: 0 auto;">
+            <source src="https://cdn.pixabay.com/audio/2022/10/30/audio_250b3610db.mp3" type="audio/mp3">
+            Your browser does not support the audio element.
+          </audio>
+        `;
+      } else if (mood === "meh") {
+        activityContainer.innerHTML = `
+          <h2>Let’s Reflect 🤔</h2>
+          <p style="text-align:center; margin-bottom: 1rem;">What's one small thing that could make today better?</p>
+          <textarea rows="4" placeholder="Write it here..." style="width: 100%; border-radius: 10px; padding: 10px;"></textarea>
+        `;
+      } else if (mood === "angry") {
+        activityContainer.innerHTML = `
+          <h2>Pop That Anger 💥</h2>
+          <div id="pop-zone" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 1rem;"></div>
+          <style>
+            .pop-anim {
+              animation: popscale 0.3s ease forwards;
+            }
+            @keyframes popscale {
+              0% { transform: scale(1); opacity: 1; }
+              50% { transform: scale(1.5); opacity: 0.7; }
+              100% { transform: scale(0); opacity: 0; }
+            }
+          </style>
+        `;
+        const popZone = document.getElementById("pop-zone");
+        for (let i = 0; i < 20; i++) {
+          const bubble = document.createElement("button");
+          bubble.textContent = "🫧";
+          bubble.style.padding = "10px 15px";
+          bubble.style.fontSize = "1.5rem";
+          bubble.style.border = "none";
+          bubble.style.borderRadius = "10px";
+          bubble.style.cursor = "pointer";
+          bubble.onclick = () => {
+            bubble.textContent = "💥";
+            bubble.classList.add("pop-anim");
+          };
+          popZone.appendChild(bubble);
+        }
+      } else if (mood === "sad") {
+        const affirmations = [
+          "You are loved 💗",
+          "You matter 🌟",
+          "You’re stronger than you think 💪"
+        ];
+        activityContainer.innerHTML = `
+          <h2>Repeat These Affirmations 🪞</h2>
+          <ul style="line-height: 2; font-size: 1.1rem;">
+            ${affirmations.map(a => `<li>${a}</li>`).join("")}
+          </ul>
+          <p style="text-align:center;">Say each one out loud three times 💬</p>
+        `;
+      } else if (mood === "anxious") {
+        activityContainer.innerHTML = `
+          <h2>Breathe In... Breathe Out 🌬️</h2>
+          <div style="margin: 20px auto; width: 150px; height: 150px; border-radius: 50%; background: #cce5ff; animation: breath 6s infinite;"></div>
+          <p style="text-align:center;">Follow the circle to calm your breath.</p>
+          <style>
+            @keyframes breath {
+              0% { transform: scale(1); opacity: 0.6; }
+              50% { transform: scale(1.5); opacity: 1; }
+              100% { transform: scale(1); opacity: 0.6; }
+            }
+          </style>
+        `;
+      }
     });
   </script>
+
+<script>
+  const gradients = [
+    "linear-gradient(120deg, #f6d365, #fda085)",
+    "linear-gradient(120deg, #a1c4fd, #c2e9fb)",
+    "linear-gradient(120deg, #fbc2eb, #a6c1ee)",
+    "linear-gradient(120deg, #ffecd2, #fcb69f)",
+    "linear-gradient(120deg, #e0c3fc, #8ec5fc)"
+  ];
+  const randomGradient = gradients[Math.floor(Math.random() * gradients.length)];
+  document.body.style.setProperty('--dynamic-gradient', randomGradient);
+</script>
+
+
 </body>
 </html>
