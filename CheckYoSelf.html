@@ -175,13 +175,25 @@
 
       if (mood === "happy") {
         activityContainer.innerHTML = `
-          <h2>Celebrate Your Joy 🎉</h2>
-          <p style="text-align:center;">Press play to vibe out to a happy tune 🎶</p>
-          <audio controls autoplay style="display:block; margin: 0 auto;">
-            <source src="https://cdn.pixabay.com/audio/2022/10/30/audio_250b3610db.mp3" type="audio/mp3">
-            Your browser does not support the audio element.
-          </audio>
-        `;
+    <h2>Gratitude Journal ✨</h2>
+    <p>Write down three things you're grateful for today:</p>
+    <textarea placeholder="1. " rows="2" style="width: 100%;"></textarea>
+    <textarea placeholder="2. " rows="2" style="width: 100%;"></textarea>
+    <textarea placeholder="3. " rows="2" style="width: 100%;"></textarea>
+    <button onclick="submitGratitude()">Submit</button>
+`;
+
+function submitGratitude() {
+    const gratitudeInputs = document.querySelectorAll('textarea');
+    const gratitudeText = Array.from(gratitudeInputs).map(input => input.value.trim()).join(", ");
+    activityContainer.innerHTML = `
+        <h2>You're Awesome!</h2>
+        <p>Here’s what you’re grateful for today:</p>
+        <ul>
+            <li>${gratitudeText}</li>
+        </ul>
+    `;
+}
       } else if (mood === "meh") {
         activityContainer.innerHTML = `
           <h2>Let’s Reflect 🤔</h2>
