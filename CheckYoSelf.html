@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CheckYoSelf - Mental Health Check-In</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #dfe9f3, #ffffff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .subheading {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 1.5rem;
+    }
+    form label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 0.3rem;
+    }
+    textarea {
+      resize: none;
+    }
+    button {
+      margin-top: 1.5rem;
+      background-color: #6c63ff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #574fd8;
+    }
+    #result {
+      margin-top: 2rem;
+      background: #f0f4ff;
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✨ CheckYoSelf</h1>
+    <p class="subheading">Your daily mental health check-in</p>
+
+    <form id="checkin-form">
+      <label for="mood">Mood:</label>
+      <select id="mood">
+        <option value="happy">🌟 Happy</option>
+        <option value="meh">😶 Meh</option>
+        <option value="anxious">😧 Anxious</option>
+        <option value="sad">😢 Sad</option>
+        <option value="angry">😠 Angry</option>
+      </select>
+
+      <label for="energy">Energy Level (1-10): <span id="energy-value">5</span></label>
+      <input type="range" id="energy" min="1" max="10" value="5" />
+
+      <label for="sleep">Sleep (hours):</label>
+      <input type="number" id="sleep" min="0" max="24" />
+
+      <label for="note">Notes / Journal:</label>
+      <textarea id="note" rows="4" placeholder="Anything you want to reflect on..."></textarea>
+
+      <button type="submit">Get My Tip ✨</button>
+    </form>
+
+    <div id="result" class="hidden">
+      <h2>Your Tip:</h2>
+      <p id="tip-text"></p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("checkin-form");
+    const energySlider = document.getElementById("energy");
+    const energyValue = document.getElementById("energy-value");
+    const resultDiv = document.getElementById("result");
+    const tipText = document.getElementById("tip-text");
+
+    const tips = {
+      happy: ["Keep spreading those good vibes!", "Gratitude journaling keeps happiness flowing ✨"],
+      anxious: ["Try the 4-7-8 breathing technique.", "Take a walk or stretch — it really helps."],
+      meh: ["Try something small and creative today.", "Drink water, move a little, rest a little ☕"],
+      sad: ["Be gentle with yourself today. It's okay to feel low.", "Reach out to someone you trust ❤"],
+      angry: ["Take a break and breathe deeply.", "Try journaling what you're feeling. It's valid."]
+    };
+
+    energySlider.addEventListener("input", () => {
+      energyValue.textContent = energySlider.value;
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const mood = document.getElementById("mood").value;
+      const tipList = tips[mood] || ["You're doing your best. That's enough for today ❤"];
+      const tip = tipList[Math.floor(Math.random() * tipList.length)];
+
+      tipText.textContent = tip;
+      resultDiv.classList.remove("hidden");
+    });
+  </script>
+</body>
+</html>
